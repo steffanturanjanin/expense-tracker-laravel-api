@@ -16,4 +16,9 @@ class Category extends Model
     {
         return $this->hasOne('App\User');
     }
+
+    public function expenses()
+    {
+        return $this->hasMany('App\Expense');
+    }
 }

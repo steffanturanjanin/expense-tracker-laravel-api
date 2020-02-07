@@ -31,4 +31,6 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('categories', 'CategoryController@store');
     Route::get('categories', 'CategoryController@index');
     Route::delete('categories/{id}', 'CategoryController@destroy');
+
+    Route::post('expenses', 'ExpenseController@store');
 });
