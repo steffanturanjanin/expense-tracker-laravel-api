@@ -39,7 +39,7 @@ class ExpenseController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'category_id' => 'required',
+            'category' => 'required',
             'name' => 'required',
             'amount' => 'required|numeric|min:1',
             'type' => 'required|numeric|min:0|max:1',
@@ -51,15 +51,15 @@ class ExpenseController extends Controller
         }
 
         $expense = new Expense();
-        $expense->category_id = $request->category_id;
+        $expense->category_id = $request->category;
         $expense->name = $request->name;
         $expense->amount = $request->amount;
         $expense->type = $request->type;
         $expense->date = Carbon::now()->toDateTimeString();
 
         $expense->save();
-
-        return new ExpenseResource($expense);
+        
+        return response()->json(new ExpenseResource($expense));
     }
 
     /**
