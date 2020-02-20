@@ -6,13 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Expense extends Model
 {
-    private $id;
-    private $category_id;
-    private $name;
-    private $amount;
-    private $type;
-    private $date;
-
     public function category()
     {
         return $this->belongsTo('App\Category');
@@ -21,5 +14,13 @@ class Expense extends Model
     public function user()
     {
         return $this->belongsTo('App\User');
+    }
+
+    public static function sumExpenses($expenses) {
+        $sum = 0;
+        foreach ($expenses as $expense) {
+            $sum = $sum + $expense->amount;
+        }
+        return $sum;
     }
 }

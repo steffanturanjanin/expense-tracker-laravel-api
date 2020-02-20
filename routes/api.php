@@ -22,7 +22,7 @@ Route::prefix('auth')->group(function () {
    Route::post('signup', 'AuthController@signup');
 
    Route::middleware(['auth:api'])->group(function () {
-       Route::get('logout', 'AuthController@logout');
+       Route::post('logout', 'AuthController@logout');
        Route::get('user', 'AuthController@user');
    });
 });
@@ -32,5 +32,14 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('categories', 'CategoryController@index');
     Route::delete('categories/{id}', 'CategoryController@destroy');
 
+
+    Route::get('expenses/{year}/{month}', 'ExpenseController@getExpensesByMonth');
+    Route::get('expenses/months', 'ExpenseController@getMonths');
+    Route::delete('expenses/{id}', 'ExpenseController@destroy');
+    Route::get('expenses', 'ExpenseController@index');
     Route::post('expenses', 'ExpenseController@store');
+
+    Route::get('date/expenses', 'ExpenseController@getDateExpensesByYearAndMonth');
+    Route::get('date/expenses/{year}/{month}', 'ExpenseController@getDateExpensesByMonth');
+
 });

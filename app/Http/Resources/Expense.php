@@ -19,7 +19,7 @@ class Expense extends JsonResource
     {
         return [
             'id' => $this->id,
-            'category' => new CategoryResource(Category::find($this->category_id)),
+            'category' => $this->type === 0 ? new CategoryResource(Category::find($this->category_id)) : null,
             'name' => $this->name,
             'amount' => $this->amount,
             'type' => $this->type === 0 ? 'expense' : 'income',

@@ -15,7 +15,8 @@ class CreateExpensesTable extends Migration
     {
         Schema::create('expenses', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('category_id');
+            $table->integer('category_id')->nullable();
+            $table->integer('user_id');
             $table->string('name');
             $table->float('amount');
             $table->integer('type');
@@ -23,6 +24,7 @@ class CreateExpensesTable extends Migration
             $table->timestamps();
 
             $table->foreign('category_id')->references('id')->on('categories');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

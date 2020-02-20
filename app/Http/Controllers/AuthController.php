@@ -11,6 +11,10 @@ use App\Http\Resources\User as UserResource;
 
 class AuthController extends Controller
 {
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function signup(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -18,8 +22,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:6'
         ]);
 
-        if ($validator->fails())
-        {
+        if ($validator->fails()) {
             return response()->json($validator->errors(), 409);
         }
 
@@ -36,10 +39,12 @@ class AuthController extends Controller
             'user' => new UserResource($user),
             'token' => $token
         ]);
-
-        //return response()->json(['email' => $user->email], 201);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -47,15 +52,13 @@ class AuthController extends Controller
             'password' => 'required|string'
         ]);
 
-        if ($validator->fails())
-        {
+        if ($validator->fails()) {
             return response()->json($validator->errors(), 409);
         }
 
         $credentials = request(['email', 'password']);
 
-        if (!Auth::attempt($credentials))
-        {
+        if (!Auth::attempt($credentials)) {
             return response()->json(['authentication' => 'Incorrect email or password'], 401);
         }
 
@@ -67,7 +70,6 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-
         return response()->json([
             'user' => new UserResource($user),
             'token' => $tokenResult->accessToken,
@@ -76,12 +78,29 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function logout(Request $request)
     {
-        $request->user()->token()->revoke();
+        try {
+            $user = $request->user();
+
+            foreach ($user->tokens as $token) {
+                $token->revoke();
+            }
+        } catch (\Exception $exception) {
+            return response()->json(['message' => 'Error']);
+        }
+
         return response()->json(['message' => 'Successfully logged out']);
     }
 
+    /**
+     * @param Request $request
+     * @return mixed
+     */
     public function user(Request $request)
     {
         return $request->user();
