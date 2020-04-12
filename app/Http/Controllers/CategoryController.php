@@ -6,6 +6,7 @@ use App\Category;
 use App\Http\Resources\Category as CategoryResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
@@ -38,16 +39,21 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+           'name' => 'required|max:20',
+            'icon' => 'required'
+        ]);
+
         $category = new Category();
         $category->name = $request->name;
         $category->icon = $request->icon;
         $category->user_id = $request->user()->id;
 
-        try {
-            $category->save();
-        } catch (\Exception $e) {
+        if (Category::where('name', $request->name)->where('user_id', $request->user()->id)->first()) {
             return response()->json(["categoryName" => "This category name already exists"], 409);
         }
+
+        $category->save();
 
         return response()->json(new CategoryResource($category));
     }
