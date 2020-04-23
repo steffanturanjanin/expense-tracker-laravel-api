@@ -16,7 +16,7 @@ class ExpenseSeeder extends Seeder
         $faker = Faker\Factory::create();
 
         foreach (Category::all() as $category) {
-            for ($i = 0; $i < $faker->numberBetween(0, 1000); $i++) {
+            for ($i = 0; $i < $faker->numberBetween(100, 1000); $i++) {
                 $expense = factory(Expense::class)->make();
                 $expense->user_id = $category->user_id;
                 $expense->category_id = $expense->type === 1 ? null : $category->id;

@@ -30,6 +30,7 @@ Route::prefix('auth')->group(function () {
 Route::middleware(['auth:api'])->group(function () {
     Route::post('categories', 'CategoryController@store');
     Route::get('categories', 'CategoryController@index');
+    Route::get('categories/{id}', 'CategoryController@show');
     Route::delete('categories/{id}', 'CategoryController@destroy');
 
 
