@@ -33,7 +33,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('categories/{id}', 'CategoryController@show');
     Route::delete('categories/{id}', 'CategoryController@destroy');
 
-
+    Route::get('expenses/categories/{id}', 'ExpenseController@getExpensesByCategory');
     Route::get('expenses/{year}/{month}', 'ExpenseController@getExpensesByMonth');
     Route::get('expenses/months', 'ExpenseController@getMonths');
     Route::delete('expenses/{id}', 'ExpenseController@destroy');

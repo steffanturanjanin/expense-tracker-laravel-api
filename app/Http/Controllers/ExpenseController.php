@@ -6,6 +6,7 @@ use App\Category;
 use App\Expense;
 use App\Http\Resources\ExpenseCollection;
 use App\User;
+use http\Env\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -45,6 +46,17 @@ class ExpenseController extends Controller
             ->get();
 
         return response()->json(ExpenseResource::collection($expenses));
+    }
+
+    public function getExpensesByCategory($id)
+    {
+        $category = Category::where('id', $id)->where('user_id', Auth::user()->id)->first();
+
+        if (!$category) {
+            return response()->json("Category not found", 404);
+        }
+
+        return response()->json(ExpenseResource::collection($category->expenses));
     }
 
     public function getDateExpensesByMonth(Request $request, int $year, int $month)
