@@ -4,9 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Category;
 use App\Expense;
-use App\Http\Resources\ExpenseCollection;
-use App\User;
-use http\Env\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -28,6 +25,7 @@ class ExpenseController extends Controller
     {
         $user = $request->user();
         $expenses = $user->expenses;
+
         return response()->json(ExpenseResource::collection($expenses));
     }
 
@@ -66,7 +64,6 @@ class ExpenseController extends Controller
         $date = [$year => ['number' => $month, 'name' => $monthName, 'days' => []]];
 
         for ($i = 1; $i <= $numberOfDaysInMonth; $i++) {
-            //$date[$year]['days'][$i]['expenses'] = [];
             $date[$year]['days'][] = ['expenses' => []];
         }
 
@@ -149,19 +146,8 @@ class ExpenseController extends Controller
         foreach ($period as $dt) {
             $months[intval($dt->format("Y"))][] = ['number' => intval($dt->format("m")), 'name' => ($dt->format("F"))];
         }
+
         return response()->json($months);
-
-    }
-
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -198,40 +184,6 @@ class ExpenseController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Expense  $expense
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Expense $expense)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Expense  $expense
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Expense $expense)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Expense  $expense
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Expense $expense)
-    {
-        //
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param  int $id
@@ -239,12 +191,17 @@ class ExpenseController extends Controller
      */
     public function destroy(int $id)
     {
-        $expense = Expense::findOrFail($id);
-        if ($expense->user->id === Auth::id()) {
-            $expense->delete();
-            return response()->json(new ExpenseResource($expense));
-        } else {
+        $expense = Expense::find($id);
+
+        if (!$expense) {
+            return response()->json(['error' => 'Entry not found'], 404);
+        }
+
+        if ($expense->user->id !== Auth::id()) {
             return response()->json(['authorization' => 'You are not authorized to delete this entry'], 401);
         }
+
+        $expense->delete();
+        return response()->json(new ExpenseResource($expense));
     }
 }

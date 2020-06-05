@@ -6,7 +6,6 @@ use App\Category;
 use App\Http\Resources\Category as CategoryResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
@@ -19,16 +18,6 @@ class CategoryController extends Controller
     {
         $user = Auth::user();
         return response()->json(CategoryResource::collection($user->categories));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -76,43 +65,23 @@ class CategoryController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Category $category)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Category $category)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id)
     {
-        $category = Category::findOrFail($id);
-        $isSuccessful = $category->delete();
-        if ($isSuccessful)
-        {
-            return response()->json(new CategoryResource($category));
-        } else {
+        $category = Category::find($id);
+
+        if (!$category) {
             return response()->json(["error" => "Deletion failed."], 404);
         }
+
+        if ($category->user_id !== Auth::id()) {
+            return response()->json(["authorization" => "You are not authorized to delete this entry."], 409);
+        }
+
+        $category->delete();
+
+        return response()->json(new CategoryResource($category));
     }
 }
